@@ -1,0 +1,39 @@
+﻿@model WebApplicationMVC.Models.NhanVien
+
+<a asp-action="Index" asp-controller="NhanVien"><button class="btn btn-primary mb-3">Back to list</button></a>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-3 col-3">
+        <div class="form-floating">
+            <input asp-for="username" type="text" class="form-control" id="floatingUsername" placeholder="Username">
+            <label for="floatingUsername">Username</label>
+        </div>
+        <span asp-validation-for="username" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3 col-3">
+        <div class="form-floating">
+            <input asp-for="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
+            <label for="floatingPassword">Password</label>
+        </div>
+        <span asp-validation-for="password" class="text-danger"></span>
+    </div>
+
+    <label>Chức vụ</label>
+    <select asp-for="chucVuId">
+        @foreach (var item in ViewBag.listCv)
+        {
+            <option value="@item.id">@item.ten</option>
+        }
+    </select>
+
+    <div class="form-group">
+        <input type="submit" value="Thêm mới" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

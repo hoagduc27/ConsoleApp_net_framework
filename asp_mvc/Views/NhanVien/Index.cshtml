@@ -1,0 +1,104 @@
+﻿@model List<NhanVien>
+
+    <a asp-controller="NhanVien" asp-action="CreateView">
+        <button class="btn btn-primary">
+            Create
+        </button>
+    </a>
+    <table class="table table-primary">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <th>Tài khoản</th>
+                <th>Chức vụ</th>
+                <th>Thao tác</th>
+            </tr>
+            @foreach (var nv in Model)
+            {
+                <tr>
+                    <td>@nv.id</td>
+                    <td>@nv.username</td>
+                    <td>@nv.chucVu?.ten</td>
+                    <td>
+                        <button class="btn btn-danger btn-xoa" data-bs-id="@nv.id" data-bs-username="@nv.username" title="Xóa">
+                            <a asp-controller="NhanVien" asp-action="Delete" asp-route-id="@nv.id" style="color:white;text-decoration:none" >
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </button>
+
+                        <button class="btn btn-success" title="Xem chi tiết">
+                            <a asp-controller="NhanVien" asp-action="Detail" asp-route-id="@nv.id" style="color:white;text-decoration:none" >
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </button>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Modal xác nhận xóa -->
+    <div class="modal" tabindex="-1" id="confirmDeleteModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancer</button>
+                <button type="button" class="btn btn-danger" id="btn-confirm" data-bs-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(".btn-xoa").on("click", function () {
+                event.preventDefault();
+                //lấy Element modal truyền data user vào
+                var modal = $("#confirmDeleteModal");
+                var nv = {
+                    id: $(this).data("bs-id"),
+                    usename: $(this).data("bs-username")
+                }
+                modal.find(".modal-body").text("Bạn có chắc chắn muốn xóa nhân viên: " + nv.usename + " có id " + nv.id + "?");
+
+                var currentRow = $(this).closest("tr");
+
+                //gắn func xóa khi ấn confirm
+                $("#btn-confirm").click(
+                    function () {
+                        console.log($(this).closest("tr"));
+                        $.ajax({
+                            url: "/NhanVien/Delete", 
+                            type: "GET",
+                            data: {id:nv.id},
+                            success: function (response) {                     
+                               if(response.status){
+                                    currentRow.remove();
+                                    alert("xóa thành công");
+                               }
+                               else{
+                                    alert("xóa thất bại ", response.error);
+                               }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                )
+                modal.modal("show");
+            });
+        });
+    </script>
+}
+
